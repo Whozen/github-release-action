@@ -63,7 +63,7 @@ jobs:
       - name: Generate Release Notes
         id: release-notes
         run: |
-          TAG_NAME="${{ steps.tag.outputs.tag }}"
+          TAG_NAME=$(git describe --tags --abbrev=0)
           BODY=$(git log --oneline --decorate $TAG_NAME..HEAD)
           echo "::set-output name=release_notes::$BODY"
       - name: Create Release
