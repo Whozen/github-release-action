@@ -1,0 +1,71 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        type: boolean
+        required: false
+        description: Are you sure you want to create new release?
+      release_name:
+        type: string
+        required: false
+        description: Name of Release. By default it will be Release version {{tag}}.
+      version_bump:
+        type: choice
+        options:
+          - PATCH
+          - MINOR
+          - MAJOR
+        required: true
+        default: PATCH
+        description: Please provide the version number to be bumped.
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Generate Tag
+        id: tag
+        shell: bash
+        run: |
+          # At least one tag must exist, ex. 0.0.0
+          # The tag must not contain "v"
+          VERSION=$(git describe --tags --abbrev=0)
+          major=$(echo $VERSION | cut -d. -f1)
+          minor=$(echo $VERSION | cut -d. -f2)
+          patch=$(echo $VERSION | cut -d. -f3)
+          case ${{ inputs.version_bump }} in
+            MAJOR)
+              ((major=$major+1))
+              minor=0
+              patch=0
+              ;;
+            MINOR)
+              ((minor=$minor+1))
+              patch=0
+              ;;
+            PATCH)
+              ((patch=$patch+1))
+              ;;
+            *)
+              ((patch=$patch+1))
+              ;;
+          esac
+          TAG=$major.$minor.$patch
+          echo "Version Updated from : $VERSION to $TAG"
+          echo "::set-output name=tag::$TAG"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release version ${{ steps.tag.outputs.tag }}
+          body: $(git log --format=%B ${TAG_NAME}..HEAD)
+          draft: false
+          prerelease: false
