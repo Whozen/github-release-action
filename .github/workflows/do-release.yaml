@@ -6,11 +6,11 @@ on:
       prompt:
         type: boolean
         required: false
-        description: Are you sure you want to create new release?
+        description: Are you sure you want to create new release? Please make sure to upgrade version in package.json and README.md file before running this workflow.
       release_name:
         type: string
         required: false
-        description: Name of Release. By default it will be Release version {{tag}}.
+        description: Name of Release. By default it will be "Release version {tag}".
       version_bump:
         type: choice
         options:
@@ -19,7 +19,7 @@ on:
           - MAJOR
         required: true
         default: PATCH
-        description: Please provide the version number to be bumped.
+        description: Please provide the version number to be bumped. Make sure this is same as version upgraded in package.json
 
 jobs:
   build:
@@ -64,8 +64,9 @@ jobs:
         id: release-notes
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0)
-          BODY=$(git log --oneline --decorate $TAG_NAME..HEAD)
-          echo "::set-output name=release_notes::$BODY"
+          RELEASE_NOTES=$(git log --format="> %s (%h) [%cs]" $TAG_NAME..HEAD)
+          RELEASE_BODY="Release Version $RELEASE_VERSION\n$RELEASE_NOTES"
+          echo "::set-output name=release_notes::$RELEASE_BODY"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
