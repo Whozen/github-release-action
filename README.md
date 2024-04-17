@@ -1,6 +1,6 @@
 # github-release-action
 
-Version: 0.1.5
+Version: 0.1.6
 
 Create and test Github workflow to create new release. The workflow should:
 1. Generate new tag based on user input (Major, Minor or Patch)
