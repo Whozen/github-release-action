@@ -59,7 +59,7 @@ jobs:
           esac
           TAG=$major.$minor.$patch
           echo "Version Updated from : $VERSION to $TAG"
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Check version in package.json
         id: version-check
         run: |
@@ -77,7 +77,7 @@ jobs:
           TAG_NAME=$(git describe --tags --abbrev=0)
           RELEASE_NOTES=$(git log --graph --format="%s (%h) [%cs]" $TAG_NAME..HEAD)
           echo "RELEASE_NOTES"
-          echo "RELEASE_NOTES=$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
+          echo "release_notes=$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -86,6 +86,6 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           release_name: Release version ${{ steps.tag.outputs.tag }}
-          body: ${{ env.RELEASE_NOTES }}
+          body: ${{ steps.release-notes.outputs.release_notes }}
           draft: false
           prerelease: false
