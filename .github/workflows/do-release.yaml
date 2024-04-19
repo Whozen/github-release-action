@@ -75,12 +75,9 @@ jobs:
         id: release-notes
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0)
-          run: |
-          {
-            echo 'release_notes<<EOF'
-            $(git log --graph --format="%s (%h) [%cs]" $TAG_NAME..HEAD)
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          echo 'release_notes<<EOF' >> $GITHUB_OUTPUT
+          git log --graph --format="%s (%h) [%cs]" $TAG_NAME..HEAD >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
