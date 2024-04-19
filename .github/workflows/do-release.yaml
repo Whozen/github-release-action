@@ -76,9 +76,8 @@ jobs:
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0)
           RELEASE_NOTES=$(git log --graph --format="%s (%h) [%cs]" $TAG_NAME..HEAD)
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          echo $RELEASE_NOTES >> $GITHUB_ENV 
-          echo "EOF" >> $GITHUB_ENV 
+          echo "RELEASE_NOTES"
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
