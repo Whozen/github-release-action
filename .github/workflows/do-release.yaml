@@ -76,7 +76,9 @@ jobs:
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0)
           RELEASE_NOTES=$(git log --graph --format="%s (%h) [%cs]" $TAG_NAME..HEAD)
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo $RELEASE_NOTES >> $GITHUB_ENV 
+          echo "EOF" >> $GITHUB_ENV 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -85,6 +87,6 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           release_name: Release version ${{ steps.tag.outputs.tag }}
-          body: ${{ steps.release-notes.outputs.release_notes }}
+          body: ${{ env.RELEASE_NOTES }}
           draft: false
           prerelease: false
