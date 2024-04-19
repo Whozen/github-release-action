@@ -4,9 +4,10 @@ Version: 0.1.13
 
 Create and test Github workflow to create new release. The workflow should:
 1. Generate new tag based on user input (Major, Minor or Patch)
-2. Generate release notes automatically
-3. Take user input for release name or automatically generate it by default if no user input.
-4. Create Github release.
+2. Verify if the bumped version matches version in package.json file.
+3. Generate release notes automatically
+4. Take user input for release name or automatically generate it by default if no user input.
+5. Create Github release.
 
 ## Project setup
 ```
